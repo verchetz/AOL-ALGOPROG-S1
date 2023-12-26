@@ -4,43 +4,39 @@
 
 #define MAX_ROWS 5000
 #define MAX_COLS 50
-#define MAX_FIELD_LENGTH 200
+#define MAX_FIELD_LENGTH 900
 
 //2a
-void display(FILE *fp){
-    int limit;
-    char line[MAX_ROWS][MAX_COLS][MAX_FIELD_LENGTH];
-    char buffer[1024]; //store data
-    printf("Number of rows: ");
+void display(FILE *fp) {
+    int limit = 0;
+    char data[MAX_ROWS][MAX_COLS][MAX_FIELD_LENGTH];  // Store CSV data
+    char buffer[1024];  // Buffer to read each line from the file
+
+    //tanya may tampilin berapa banyak
+    printf("Jumlah row: ");
     scanf("%d", &limit); getchar();
 
-        //tampilkan data
+    // Read data from file
     int row = 0;
     while (fgets(buffer, sizeof(buffer), fp) != NULL && row < limit+1) {
-        int col = 0;
-        char *token = strtok(buffer, ",\n"); // hilangkan ","
+        int col = 0; 
+        char *token = strtok(buffer, ",\n");  // Split the line into tokens using ',' or newline
 
         while (token != NULL && col < MAX_COLS) {
-            strcpy(line[row][col], token); // Store each field in
-			
-            //bagusin tampilan dengan strlen 
-            if (strlen(line[row][col]) < 8 || strlen(line[row][col]) == 0)
-            {                
-                printf("%s\t\t\t", line[row][col]); // Display each field (tab-separated)
-            }else if (8 <= strlen(line[row][col]) && strlen(line[row][col]) < 15)
-            {
-                printf("%s\t\t", line[row][col]);
-            }else if (strlen(line[row][col]) >= 15)
-            {
-                printf("%s\t", line[row][col]);
-            }
-            
+            strcpy(data[row][col], token);  // Store each field in data[row][col]
             token = strtok(NULL, ",\n");
             col++;
         }
 
-        printf("\n"); // Move to the next line for the next row
         row++;
+    }
+
+    //table
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < MAX_COLS; j++) {
+            printf("%-23s", data[i][j]);  // Adjust width as needed for columns
+        }
+        printf("\n");
     }
 }
 
@@ -57,7 +53,7 @@ void search(FILE *fp){
 
         //tampilkan data
     int row = 0;
-    while (fgets(buffer, sizeof(buffer), fp) != NULL && row < MAX_ROWS) {
+    while (fgets(buffer, sizeof(buffer), fp) != NULL && row < 10) {
         int col = 0;
         char *token = strtok(buffer, ",\n"); // hilangkan ","
         
@@ -93,6 +89,7 @@ void search(FILE *fp){
 int main() {
     FILE *fp;
     fp = fopen("file.csv", "r");
+    int row = 0;
     int userInput = 0;
 
     //menu
@@ -106,12 +103,13 @@ int main() {
         puts("5. Exit");
         printf("Your Choice: ");
         scanf("%d", &userInput);getchar();
-    } while (userInput < 1 || userInput > 6);
+    } while (userInput < 0 || userInput > 6);
     
     //selection
     switch (userInput)
     {
         case 1:
+            rewind(fp);
             display(fp);
             break;
         case 2:
